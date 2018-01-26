@@ -32,6 +32,7 @@ def bot():
  
 def reply(replyToken, textList):
     # Method สำหรับตอบกลับข้อความประเภท text กลับครับ เขียนแบบนี้เลยก็ได้ครับ
+    i=0
     LINE_API = 'https://api.line.me/v2/bot/message/reply'
     headers = {
         'Content-Type': 'application/json; charset=UTF-8',
@@ -41,8 +42,10 @@ def reply(replyToken, textList):
     for text in textList:
         msgs.append({
             "type":"text",
-            "text":textList[5]
+            "text":text+(i)+"\r\n"
+
         })
+        i=i+1
     data = json.dumps({
         "replyToken":replyToken,
         "messages":msgs
