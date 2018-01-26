@@ -4,7 +4,7 @@ import requests
 
 # ตรง YOURSECRETKEY ต้องนำมาใส่เองครับจะกล่าวถึงในขั้นตอนต่อๆ ไป
 global LINE_API_KEY
-LINE_API_KEY = 'Bearer YOURSECRETKEY'
+LINE_API_KEY = 'Bearer h+qeE1xA1qN6BdAqq411jgmkMh3e93g0+Vpe4139BlsEsFC2gKPecE79EGp426PeyzpNcITX2Cb1hdzw1GI0hOivGtpmNH+/j6CLr6vjLd5to1PSqV00zZTauNPB7ien1uVju+dX2+ew0fhGhHm7OAdB04t89/1O/w1cDnyilFU='
 
 app = Flask(__name__)
  
