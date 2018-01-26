@@ -23,14 +23,14 @@ def bot():
     
     # Token สำหรับตอบกลับ (จำเป็นต้องใช้ในการตอบกลับ)
     replyToken = msg_in_json["events"][0]['replyToken']
-
+    umassage = msg_in_json["events"]['message']['text']
     # ทดลอง Echo ข้อความกลับไปในรูปแบบที่ส่งไป-มา (แบบ json)
     replyStack.append(msg_in_string)
-    reply(replyToken, replyStack[:5],msg_in_json)
+    reply(replyToken, replyStack[:5],umassage)
 
     return 'OK',200
  
-def reply(replyToken, textList,msg_in_json):
+def reply(replyToken, textList,umassage):
     # Method สำหรับตอบกลับข้อความประเภท text กลับครับ เขียนแบบนี้เลยก็ได้ครับ
 
     LINE_API = 'https://api.line.me/v2/bot/message/reply'
@@ -42,7 +42,7 @@ def reply(replyToken, textList,msg_in_json):
     for text in textList:
         msgs.append({
             "type":"text",
-            "text":msg_in_json
+            "text":umassage
         })
     data = json.dumps({
         "replyToken":replyToken,
