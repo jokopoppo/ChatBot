@@ -42,7 +42,7 @@ def reply(replyToken, textList):
     for text in textList:
         msgs.append({
             "type":"text",
-            "text":text[:text.length]
+            "text":text[:text.length-1]
         })
     data = json.dumps({
         "replyToken":replyToken,
