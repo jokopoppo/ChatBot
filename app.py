@@ -28,7 +28,7 @@ def bot():
     umsgText=msgcon(umsgText,userID);
 
     # ทดลอง Echo ข้อความกลับไปในรูปแบบที่ส่งไป-มา (แบบ json)
-    replyStack.append(msg_in_string)
+    replyStack.append(umsgText)
     reply(replyToken, replyStack[:5])
 
     return 'OK',200
@@ -56,7 +56,7 @@ def reply(replyToken, textList):
     return
 
 def msgcon(umsgText,userID):
-    if userID=="U0818e020c39a3d0945f679469801e2bf"
+    if userID=="U0818e020c39a3d0945f679469801e2bf":
         umsgText+="hi winner"
     if umsgText=="room":
         umsgText+="1-12"
