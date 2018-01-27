@@ -42,7 +42,7 @@ def reply(replyToken, textList):
     msgs = []
     for text in textList:
         msgs.append({
-            "type": "Text",
+            "type": "text",
             "text": text
 
         })
