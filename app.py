@@ -58,7 +58,7 @@ def msgcon(umsgText):
         umsgText="1-12"
 
 
-    return
+    return umsgText
 
 if __name__ == '__main__':
     app.run()
