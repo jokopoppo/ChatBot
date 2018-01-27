@@ -26,7 +26,7 @@ def bot():
     umsgText =  msg_in_json["events"][0]['message']['text']
     umsgText=msgcon(umsgText);
     # ทดลอง Echo ข้อความกลับไปในรูปแบบที่ส่งไป-มา (แบบ json)
-    replyStack.append(umsgText)
+    replyStack.append(msg_in_string)
     reply(replyToken, replyStack[:5])
 
     return 'OK',200
@@ -42,30 +42,9 @@ def reply(replyToken, textList):
     msgs = []
     for text in textList:
         msgs.append({
-            "type": "template",
-            "altText": "This is a buttons template",
-            "template": {
-                "type": "buttons",
-                "title": "Menu",
-                "text": "Please select",
-                "actions": [
-                    {
-                        "type": "postback",
-                        "label": "Buy",
-                        "data": "action=buy&itemid=123"
-                    },
-                    {
-                        "type": "postback",
-                        "label": "Add to cart",
-                        "data": "action=add&itemid=123"
-                    },
-                    {
-                        "type": "uri",
-                        "label": "View detail",
-                        "uri": "http://example.com/page/123"
-                    }
-                ]
-            }
+            "type": "Text",
+            "text": text
+
         })
     data = json.dumps({
         "replyToken":replyToken,
