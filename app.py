@@ -24,6 +24,7 @@ def bot():
     # Token สำหรับตอบกลับ (จำเป็นต้องใช้ในการตอบกลับ)
     replyToken = msg_in_json["events"][0]['replyToken']
     umsgText =  msg_in_json["events"][0]['message']['text']
+    msgcon(umsgText);
     # ทดลอง Echo ข้อความกลับไปในรูปแบบที่ส่งไป-มา (แบบ json)
     replyStack.append(umsgText)
     reply(replyToken, replyStack[:5])
@@ -51,7 +52,13 @@ def reply(replyToken, textList):
     requests.post(LINE_API, headers=headers, data=data)
     return
 
-def msgcon(): return;
+def msgcon(umsgText):
+
+    if umsgText=="room":
+        umsgText="1-12"
+
+
+    return
 
 if __name__ == '__main__':
     app.run()
