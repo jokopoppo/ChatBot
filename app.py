@@ -57,9 +57,9 @@ def reply(replyToken, textList):
 
 def msgcon(umsgText,userID):
     if umsgText=="room":
-        umsgText="1-12\r\n"
+        umsgText="1-12"
     if userID=="U0818e020c39a3d0945f679469801e2bf":
-        umsgText+="hi winner"
+        umsgText+="\r\nhi winner"
 
 
 
