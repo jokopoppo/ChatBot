@@ -1,8 +1,12 @@
 from flask import Flask, request
 import json
 import requests
+import os
+import redis
 
+r = redis.from_url(os.environ.get("redis://h:peb8a946b775505a189710b878a91e63b56ad8512c2fb2b05e83b81c9720c8f4b@ec2-34-196-130-224.compute-1.amazonaws.com:51659","ec2-34-196-130-224.compute-1.amazonaws.com"))
 # ตรง YOURSECRETKEY ต้องนำมาใส่เองครับจะกล่าวถึงในขั้นตอนต่อๆ ไป
+
 global LINE_API_KEY
 LINE_API_KEY = 'Bearer h+qeE1xA1qN6BdAqq411jgmkMh3e93g0+Vpe4139BlsEsFC2gKPecE79EGp426PeyzpNcITX2Cb1hdzw1GI0hOivGtpmNH+/j6CLr6vjLd5to1PSqV00zZTauNPB7ien1uVju+dX2+ew0fhGhHm7OAdB04t89/1O/w1cDnyilFU='
 
@@ -25,6 +29,7 @@ def bot():
     replyToken = msg_in_json["events"][0]['replyToken']
     umsgText =  msg_in_json["events"][0]['message']['text']
     userID = msg_in_json["events"][0]['source']['userId']
+    r.lpush("kkk","eiei")
     umsgText=msgcon(umsgText,userID);
 
     # ทดลอง Echo ข้อความกลับไปในรูปแบบที่ส่งไป-มา (แบบ json)
