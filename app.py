@@ -1,74 +1,100 @@
-from flask import Flask, request
-import json
-import requests
+from flask import Flask, flash, redirect, render_template, request, session, abort
+from random import randint
 import os
-import redis
-
-r = redis.from_url(os.environ.get("redis://h:peb8a946b775505a189710b878a91e63b56ad8512c2fb2b05e83b81c9720c8f4b@ec2-34-196-130-224.compute-1.amazonaws.com:51659","ec2-34-196-130-224.compute-1.amazonaws.com"))
-# ตรง YOURSECRETKEY ต้องนำมาใส่เองครับจะกล่าวถึงในขั้นตอนต่อๆ ไป
-
-global LINE_API_KEY
-LINE_API_KEY = 'Bearer h+qeE1xA1qN6BdAqq411jgmkMh3e93g0+Vpe4139BlsEsFC2gKPecE79EGp426PeyzpNcITX2Cb1hdzw1GI0hOivGtpmNH+/j6CLr6vjLd5to1PSqV00zZTauNPB7ien1uVju+dX2+ew0fhGhHm7OAdB04t89/1O/w1cDnyilFU='
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import *
+# from tabledef import *
+from wtforms import Form, TextField, TextAreaField, validators, StringField, SubmitField
+# from register import *
+engine = create_engine('sqlite:///tutorial.db', echo=True)
 
 app = Flask(__name__)
- 
+
 @app.route('/')
-def index():
-    return 'This is chatbot server.'
-@app.route('/bot', methods=['POST'])
+def home(name=""):
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    else:
+        return hello(name=name)
 
-def bot():
-    # ข้อความที่ต้องการส่งกลับ
-    replyStack = list()
-   
-    # ข้อความที่ได้รับมา
-    msg_in_json = request.get_json()
-    msg_in_string = json.dumps(msg_in_json)
-    
-    # Token สำหรับตอบกลับ (จำเป็นต้องใช้ในการตอบกลับ)
-    replyToken = msg_in_json["events"][0]['replyToken']
-    umsgText =  msg_in_json["events"][0]['message']['text']
-    userID = msg_in_json["events"][0]['source']['userId']
-    r.lpush("kkk","eiei")
-    umsgText=msgcon(umsgText,userID);
-
-    # ทดลอง Echo ข้อความกลับไปในรูปแบบที่ส่งไป-มา (แบบ json)
-    replyStack.append(umsgText)
-    reply(replyToken, replyStack[:5])
-
-    return 'OK',200
- 
-def reply(replyToken, textList):
-    # Method สำหรับตอบกลับข้อความประเภท text กลับครับ เขียนแบบนี้เลยก็ได้ครับ
-
-    LINE_API = 'https://api.line.me/v2/bot/message/reply'
-    headers = {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': LINE_API_KEY
-    }
-    msgs = []
-    for text in textList:
-        msgs.append({
-            "type": "text",
-            "text": text
-
-        })
-    data = json.dumps({
-        "replyToken":replyToken,
-        "messages":msgs
-    })
-    requests.post(LINE_API, headers=headers, data=data)
-    return
-
-def msgcon(umsgText,userID):
-    if umsgText=="room":
-        umsgText="1-12"
-    if userID=="U0818e020c39a3d0945f679469801e2bf":
-        umsgText+="\r\nhi winner"
+@app.route('/test')
+def test():
+    return "Deploy Success"
 
 
+@app.route('/login', methods=['POST'])
+def do_admin_login():
 
-    return umsgText
+    POST_USERNAME = str(request.form['username'])
+    POST_PASSWORD = str(request.form['password'])
 
-if __name__ == '__main__':
-    app.run()
+    Session = sessionmaker(bind=engine)
+    s = Session()
+    query = s.query(User).filter(User.username.in_([POST_USERNAME]), User.password.in_([POST_PASSWORD]) )
+    result = query.first()
+    if result:
+        session['logged_in'] = True
+    else:
+        flash('wrong password!')
+    return home(POST_USERNAME)
+
+@app.route("/logout")
+def logout():
+    session['logged_in'] = False
+    return home()
+
+@app.route("/hello/<string:name>/")
+def hello(name):
+    #    return name
+    quotes = [ "'If people do not believe that mathematics is simple, it is only because they do not realize how complicated life is.' -- John Louis von Neumann ",
+               "'Computer science is no more about computers than astronomy is about telescopes' --  Edsger Dijkstra ",
+               "'To understand recursion you must first understand recursion..' -- Unknown",
+               "'You look at things that are and ask, why? I dream of things that never were and ask, why not?' -- Unknown",
+               "'Mathematics is the key and door to the sciences.' -- Galileo Galilei",
+               "'Not everyone will understand your journey. Thats fine. Its not their journey to make sense of. Its yours.' -- Unknown"  ]
+    randomNumber = randint(0,len(quotes)-1)
+    quote = quotes[randomNumber]
+
+    return render_template('test.html',**locals())
+
+
+class ReusableForm(Form):
+    name = TextField('Name:', validators=[validators.required()])
+    email = TextField('Email:', validators=[validators.required(), validators.Length(min=6, max=35)])
+    password = TextField('Password:', validators=[validators.required(), validators.Length(min=3, max=35)])
+
+    def reset(self):
+        blankData = MultiDict([ ('csrf', self.reset_csrf() ) ])
+        self.process(blankData)
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    form = ReusableForm(request.form)
+
+    print (form.errors)
+    if request.method == 'POST':
+        name=request.form['name']
+        password=request.form['password']
+        email=request.form['email']
+        print (name, " ", email, " ", password)
+
+        if form.validate():
+            # Save the comment here.
+            Session = sessionmaker(bind=engine)
+            s = Session()
+            query = s.query(User).filter(User.username.in_([name]), User.password.in_([password]) )
+            result = query.first()
+            if not result:
+                regismember(name,password)
+                session['logged_in'] = True
+                return home(name=name)
+            else:
+                flash('Error: Duplicate username. ')
+        else:
+            flash('Error: All the form fields are required. ')
+
+    return render_template('register.html', form=form)
+
+if __name__ == "__main__":
+    app.secret_key = os.urandom(12)
+    app.run(debug=True,host='0.0.0.0', port=4000)
